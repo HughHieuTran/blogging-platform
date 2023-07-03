@@ -5,10 +5,14 @@ import com.hughtran.redditclone.model.Subreddit;
 import com.hughtran.redditclone.repository.SubredditRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SubredditService {
 
     private final SubredditRepository subredditRepository;
@@ -20,10 +24,27 @@ public class SubredditService {
         return subredditDto;
     }
 
+    @Transactional
+    public List<SubredditDto> getAll(){
+        return subredditRepository
+                .findAll()
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+    private SubredditDto mapToDto(Subreddit subreddit){
+        return SubredditDto.builder().name(subreddit.getName())
+                .id(subreddit.getId())
+                .numberOfPosts(subreddit.getPosts().size())
+                .build();
+    }
+
     private Subreddit mapDtoToSubreddit(SubredditDto subredditDto) {
         return Subreddit.builder()
                 .name(subredditDto.getName())
                 .description(subredditDto.getDescription())
                 .build();
     }
+
+
 }
