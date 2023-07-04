@@ -1,6 +1,8 @@
 package com.hughtran.redditclone.service;
 
 import com.hughtran.redditclone.dto.SubredditDto;
+import com.hughtran.redditclone.exceptions.SubredditNotFoundException;
+import com.hughtran.redditclone.mapper.SubredditMapper;
 import com.hughtran.redditclone.model.Subreddit;
 import com.hughtran.redditclone.repository.SubredditRepository;
 import jakarta.transaction.Transactional;
@@ -16,10 +18,11 @@ import java.util.stream.Collectors;
 public class SubredditService {
 
     private final SubredditRepository subredditRepository;
+    private final SubredditMapper subredditMapper;
 
     @Transactional
     public SubredditDto save(SubredditDto subredditDto) {
-        Subreddit save = subredditRepository.save(mapDtoToSubreddit(subredditDto));
+        Subreddit save = subredditRepository.save(subredditMapper.mapDtoToSubreddit(subredditDto));
         subredditDto.setId(save.getId());
         return subredditDto;
     }
@@ -29,22 +32,18 @@ public class SubredditService {
         return subredditRepository
                 .findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(subredditMapper::mapSubredditToDto)
                 .collect(Collectors.toList());
     }
-    private SubredditDto mapToDto(Subreddit subreddit){
-        return SubredditDto.builder().name(subreddit.getName())
-                .id(subreddit.getId())
-                .numberOfPosts(subreddit.getPosts().size())
-                .build();
+
+    public SubredditDto getSubreddit(Long id){
+        Subreddit subreddit = subredditRepository.findById(id)
+                .orElseThrow(()->new SubredditNotFoundException("No subreddit found"));
+        return subredditMapper.mapSubredditToDto(subreddit);
     }
 
-    private Subreddit mapDtoToSubreddit(SubredditDto subredditDto) {
-        return Subreddit.builder()
-                .name(subredditDto.getName())
-                .description(subredditDto.getDescription())
-                .build();
-    }
+
+
 
 
 }
