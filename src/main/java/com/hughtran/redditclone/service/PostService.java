@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
@@ -50,15 +50,17 @@ public class PostService {
         return postRepository.findAll()
                 .stream()
                 .map(postMapper::mapToDto)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
+
+
 
     @Transactional()
     public List<PostResponse> getPostsBySubreddit(Long subredditId) {
         Subreddit subreddit = subredditRepository.findById(subredditId)
                 .orElseThrow(() -> new SubredditNotFoundException(subredditId.toString()));
         List<Post> posts = postRepository.findAllBySubreddit(subreddit);
-        return posts.stream().map(postMapper::mapToDto).collect(Collectors.toList());
+        return posts.stream().map(postMapper::mapToDto).collect(toList());
     }
 
     @Transactional()
@@ -68,6 +70,6 @@ public class PostService {
         return postRepository.findByUser(user)
                 .stream()
                 .map(postMapper::mapToDto)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 }

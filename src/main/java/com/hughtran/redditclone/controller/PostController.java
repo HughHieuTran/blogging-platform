@@ -2,6 +2,7 @@ package com.hughtran.redditclone.controller;
 
 import com.hughtran.redditclone.dto.PostRequest;
 import com.hughtran.redditclone.dto.PostResponse;
+import com.hughtran.redditclone.model.Post;
 import com.hughtran.redditclone.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,11 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<List<PostResponse>> getAllPosts() {
+
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
